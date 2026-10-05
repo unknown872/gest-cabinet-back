@@ -2,7 +2,7 @@
 
 ## Prérequis
 
-Avant de commencer, vous devez avoir installé :
+#### Avant de commencer, vous devez avoir installé :
 
 Java JDK
 
@@ -10,10 +10,12 @@ Maven
 
 Git
 
-Vérifier les installations :
+#### Vérifier les installations :
 
 java -version
+
 mvn -version
+
 git --version
 
 ## Installation
