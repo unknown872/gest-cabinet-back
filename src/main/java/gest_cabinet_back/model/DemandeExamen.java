@@ -1,28 +1,35 @@
 package gest_cabinet_back.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity 
 @Getter 
 @Setter
 @NoArgsConstructor
+@Table(name = "demande_examen")
 public class DemandeExamen {
+
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String typeExamen;
-    private LocalDateTime dateDemande;
-    private String consignes;
-    private StatutExamen statut;
 
-    public DemandeExamen(Long id, String typeExamen, LocalDateTime dateDemande, String consignes, StatutExamen statut) {
-        this.id = id;
-        this.typeExamen = typeExamen;
-        this.dateDemande = dateDemande;
-        this.consignes = consignes;
-        this.statut = statut;
-    }
+    private LocalDateTime dateDemande;
+
+    @Column(columnDefinition = "TEXT")
+    private String consignes;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatutExamen statut = StatutExamen.EN_ATTENTE;
+
+    
 
 }

@@ -2,27 +2,33 @@ package gest_cabinet_back.model;
 
 import java.time.LocalDateTime;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "reglement")
 @Getter
 @Setter
 @NoArgsConstructor
 public class Reglement {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime dateReglement;
-    private Float montant;
+
+    @Column(nullable = false)
+    private double montant;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mode_paiement", nullable = false)
     private ModePaiement modePaiement;
+
     private String reference;
 
-    public Reglement(Long id, LocalDateTime dateReglement, Float montant, ModePaiement modePaiement, String reference) {
-        this.id = id;
-        this.dateReglement = dateReglement;
-        this.montant = montant;
-        this.modePaiement = modePaiement;
-        this.reference = reference;
-    }
+    @ManyToOne
+    @JoinColumn(name = "facture_id", nullable = false)
+    private Facture facture;
     
 }

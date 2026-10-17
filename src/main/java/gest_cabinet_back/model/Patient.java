@@ -1,23 +1,21 @@
 package gest_cabinet_back.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "patient")
 @Getter
 @Setter
 @NoArgsConstructor
 public class Patient extends Utilisateur {
 
+    @Column(unique = true)
     private String numSecuSocial;
-    private LocalDate dateNaissance;
 
-    public Patient(Long id, String nom, String prenom, String genre, String email, String motDePasse, String telephone, boolean actif, Role role, String numSecuSocial, LocalDate dateNaissance) {
-        super(id, nom, prenom, genre, email, motDePasse, telephone, actif, role);
-        this.numSecuSocial = numSecuSocial;
-        this.dateNaissance = dateNaissance;
-    }
-    
+    @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private DossierMedical dossierMedical;
+
 }

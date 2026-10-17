@@ -1,26 +1,31 @@
 package gest_cabinet_back.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "acte_medical")
 @Getter
 @Setter
 @NoArgsConstructor
 public class ActeMedical {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
     private String code;
+
+    @Column(nullable = false)
     private String libelle;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false)
     private Double tarifBase;
+
     private Boolean remboursable;
 
-    public ActeMedical(Long id, String code, String libelle, String description, Double tarifBase, Boolean remboursable) {
-        this.id = id;
-        this.code = code;
-        this.libelle = libelle;
-        this.description = description;
-        this.tarifBase = tarifBase;
-        this.remboursable = remboursable;
-    }
+
 }

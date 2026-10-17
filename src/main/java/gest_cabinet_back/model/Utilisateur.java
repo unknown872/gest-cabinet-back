@@ -1,42 +1,53 @@
 package gest_cabinet_back.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
- 
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "utilisateur")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 @NoArgsConstructor
 public abstract class Utilisateur {
- 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
- 
+
+    @Column(nullable = false)
     private String nom;
- 
+
+    @Column(nullable = false)
     private String prenom;
 
-    private String genre;
- 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Genre genre;
+
+    @Column(nullable = false)
+    private String adresse;
+
+    @Column(nullable = false)
+    private LocalDate dateNaissance;
+
+    @Column(nullable = false)
     private String email;
- 
+
+    @Column(nullable = false)
     private String motDePasse;
- 
+
+    @Column(nullable = false)
     private String telephone;
- 
+
+
+    @Column(nullable = false)
     private boolean actif;
- 
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
-    public Utilisateur(Long id, String nom, String prenom, String genre, String email, String motDePasse, String telephone, boolean actif, Role role) {
-        this.id = id;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.genre = genre;
-        this.email = email;
-        this.motDePasse = motDePasse;
-        this.telephone = telephone;
-        this.actif = actif;
-        this.role = role;
-    }
 }
  

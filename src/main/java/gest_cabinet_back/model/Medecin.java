@@ -1,21 +1,30 @@
 package gest_cabinet_back.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.*;
+
+@Entity
+@Table(name = "medecin")
 @Getter 
 @Setter 
-@NoArgsConstructor 
+@NoArgsConstructor
 public class Medecin extends Utilisateur {
 
+    @Column(unique = true)
     private String rpps;
+
+    @Column(name = "signature_numerique", nullable = false)
     private String signatureNumerique;
 
-    public Medecin(Long id, String nom, String prenom, String genre, String email, String motDePasse, String telephone, boolean actif, Role role, String rpps, String signatureNumerique) {
-        super(id, nom, prenom, genre, email, motDePasse, telephone, actif, role);
-        this.rpps = rpps;
-        this.signatureNumerique = signatureNumerique;
-    }
+    @ManyToMany
+    @JoinTable(name = "medecin_specialite",
+               joinColumns = @JoinColumn(name = "medecin_id"),
+               inverseJoinColumns = @JoinColumn(name = "specialite_id"))
+    private List<Specialite> specialites = new ArrayList<>();
+
+    @OneToMany(mappedBy = "medecin", cascade = CascadeType.ALL)
+    private List<DisponibiliteMedecin> disponibilites = new ArrayList<>();
 
 }
