@@ -1,0 +1,36 @@
+package gest_cabinet_back.controller;
+
+import gest_cabinet_back.model.Administrateur;
+import gest_cabinet_back.service.AdministrateurService;
+
+import java.util.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.web.bind.annotation.*;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/administrateurs")
+@RequiredArgsConstructor
+public class AdministrateurController {
+
+        private AdministrateurService administrateurService;
+
+        @Operation(summary = "Find all administrateurs")
+        @GetMapping
+        public List<Administrateur> findAll() {
+            return administrateurService.findAll();
+        }
+
+        @Operation(summary = "Find an administrateur by id")
+        @GetMapping("/{id}")
+        public Administrateur findById(@PathVariable Long id) {
+            return administrateurService.findById(id);
+        }
+
+
+
+}

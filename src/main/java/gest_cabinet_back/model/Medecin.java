@@ -13,9 +13,9 @@ import java.util.*;
 public class Medecin extends Utilisateur {
 
     @Column(unique = true)
-    private String rpps;
+    private String codeMedecin;
 
-    @Column(name = "signature_numerique", nullable = false)
+    @Column(name = "signature_numerique")
     private String signatureNumerique;
 
     @ManyToMany

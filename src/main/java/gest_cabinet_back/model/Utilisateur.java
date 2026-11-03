@@ -16,6 +16,9 @@ public abstract class Utilisateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String code;
+
     @Column(nullable = false)
     private String nom;
 
@@ -38,9 +41,8 @@ public abstract class Utilisateur {
     @Column(nullable = false)
     private String motDePasse;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String telephone;
-
 
     @Column(nullable = false)
     private boolean actif;

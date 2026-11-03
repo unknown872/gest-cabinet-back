@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor 
 public class Administrateur extends Utilisateur {
-
+    @Column(unique = true)
+    private String codeAdministrateur;
 }
 

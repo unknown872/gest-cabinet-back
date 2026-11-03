@@ -4,5 +4,5 @@ public enum Role {
     ADMINISTRATEUR,
     MEDECIN,
     SECRETAIRE,
-    PATIENT
+    PATIENT,
 }

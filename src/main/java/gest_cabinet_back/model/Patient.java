@@ -13,6 +13,9 @@ import java.time.LocalDate;
 public class Patient extends Utilisateur {
 
     @Column(unique = true)
+    private String codePatient;
+
+    @Column(unique = true)
     private String numSecuSocial;
 
     @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
