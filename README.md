@@ -136,3 +136,149 @@ Dans pgAdmin, actualiser `Schemas` → `public` → `Tables` pour vérifier leur
 - Chaque membre utilise sa propre base locale.
 - Les données présentes sur un ordinateur ne sont pas automatiquement transférées aux autres.
 - `ddl-auto=update` facilite la création des tables, mais ne remplace pas un système de migrations versionnées.
+
+
+## Configuration initiale de la sécurité et gestion des utilisateurs
+
+### 1. Création du compte administrateur (IMPORTANT)
+
+Avant de pouvoir utiliser les fonctionnalités de gestion des utilisateurs, chaque membre doit créer manuellement un premier compte administrateur directement dans sa base de données PostgreSQL.
+
+Cette étape est obligatoire pour initialiser la partie sécurité et permettre ensuite à l'administrateur de créer les autres types d'utilisateurs : `PATIENT`, `MEDECIN` et `SECRETAIRE`.
+
+Pour cela, exécuter la requête SQL suivante dans pgAdmin, sur la base de données `gest_cabinet_db` :
+
+```sql
+WITH new_user AS (
+    INSERT INTO utilisateur (
+        nom,
+        prenom,
+        email,
+        mot_de_passe,
+        telephone,
+        actif,
+        role,
+        genre,
+        adresse,
+        date_naissance,
+        code
+    )
+    VALUES (
+        'DOE',
+        'John',
+        'doe@admin.com',
+        '$2b$10$zZbPMV9MG6doBWZroEpWwOcudsfvHUkBWhv7EWDrCb1X1hJR5Hcm6',
+        '770000000',
+        true,
+        'ADMINISTRATEUR',
+        'MASCULIN',
+        'Dakar',
+        '1990-01-01',
+        'USER-000001'
+    )
+    RETURNING id
+)
+INSERT INTO administrateur (
+    id,
+    code_administrateur
+)
+SELECT
+    id,
+    'ADM-000001'
+FROM new_user;
+```
+
+#### Identifiants du compte administrateur
+
+- **Email :** `doe@admin.com`
+- **Mot de passe :** `Patient@2026`
+
+> **Important :** Chaque membre doit exécuter cette requête une seule fois sur sa propre base de données locale. Le compte administrateur est indispensable pour accéder aux fonctionnalités de gestion des utilisateurs.
+
+### 2. Gestion des utilisateurs par l'administrateur
+
+Une fois le compte administrateur créé, connectez-vous avec ses identifiants afin de pouvoir ajouter et consulter les utilisateurs de l'application.
+
+Les endpoints disponibles sont les suivants :
+
+| Opération | Méthode HTTP | Endpoint |
+|---|---|---|
+| Ajouter un utilisateur | `POST` | `http://localhost:8080/api/utilisateurs` |
+| Afficher les utilisateurs | `GET` | `http://localhost:8080/api/utilisateurs` |
+
+#### Ajouter un utilisateur
+
+Pour créer un utilisateur, utilisez la requête suivante dans Postman :
+
+**Endpoint :**
+
+```http
+POST http://localhost:8080/api/utilisateurs
+```
+
+**Body (JSON) :**
+
+```json
+{
+    "nom": "Doe",
+    "prenom": "John",
+    "email": "doe.john@test.com",
+    "motDePasse": "Patient@2026",
+    "genre": "MASCULIN",
+    "adresse": "Dakar",
+    "dateNaissance": "2024-01-01",
+    "telephone": "770989090",
+    "actif": true,
+    "role": "PATIENT"
+}
+```
+
+Vous pouvez également créer des utilisateurs de type `MEDECIN` ou `SECRETAIRE`. Il suffit de modifier la valeur du champ `role` selon le profil souhaité.
+
+Exemples :
+
+- `"role": "PATIENT"`
+- `"role": "MEDECIN"`
+- `"role": "SECRETAIRE"`
+
+#### Afficher la liste des utilisateurs
+
+Pour consulter les utilisateurs enregistrés dans l'application :
+
+**Endpoint :**
+
+```http
+GET http://localhost:8080/api/utilisateurs
+```
+
+> **Attention :** N'oubliez pas de vous connecter avec le compte administrateur avant d'effectuer ces opérations. Ces endpoints nécessitent une authentification et les autorisations appropriées.
+
+### 3. Inscription directe d'un patient
+
+Il est également possible de créer directement un compte de type `PATIENT`, sans passer par le compte administrateur.
+
+Pour cela, utilisez l'endpoint d'inscription publique suivant :
+
+- **Méthode HTTP :** `POST`
+- **Endpoint :** `http://localhost:8080/api/auth/register`
+
+#### Exemple de requête JSON
+
+```json
+{
+    "nom": "Doe",
+    "prenom": "John",
+    "email": "doe.john@test.com",
+    "motDePasse": "Patient@2026",
+    "genre": "MASCULIN",
+    "adresse": "Dakar",
+    "dateNaissance": "2024-01-01",
+    "telephone": "770989090",
+    "actif": true,
+    "role": "PATIENT"
+}
+```
+
+Cette route permet aux patients de s'inscrire directement sur la plateforme sans intervention préalable de l'administrateur.
+
+> **Remarque :** Cette inscription directe concerne uniquement les patients. La création des comptes `MEDECIN` et `SECRETAIRE` doit passer par le compte administrateur.
