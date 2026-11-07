@@ -1,9 +1,9 @@
 package gest_cabinet_back.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +28,7 @@ public class DisponibiliteMedecin {
 
     private Integer dureeCreneauMinutes;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "medecin_id", nullable = false)
     private Medecin medecin;
