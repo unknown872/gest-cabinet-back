@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SpecialiteController {
 
-    private SpecialiteService specialiteService;
+    private final SpecialiteService specialiteService;
 
     @PreAuthorize("hasAnyRole('ADMINISTRATEUR','MEDECIN','SECRETAIRE')")
     @GetMapping

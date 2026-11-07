@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdministrateurService {
 
-    private AdministrateurRepository administrateurRepository;
+    private final AdministrateurRepository administrateurRepository;
 
     public List<Administrateur> findAll() {
         return administrateurRepository.findAll();

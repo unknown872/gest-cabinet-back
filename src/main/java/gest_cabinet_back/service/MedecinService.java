@@ -11,7 +11,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MedecinService {
 
-    private MedecinRepository medecinRepository;
+    private final MedecinRepository medecinRepository;
 
     public List<Medecin> findAll() {
         return medecinRepository.findAll();
@@ -36,7 +36,5 @@ public class MedecinService {
         medecinToUpdate.setPrenom(medecin.getPrenom());
         return save(medecinToUpdate);
     }
-
-
 
 }
