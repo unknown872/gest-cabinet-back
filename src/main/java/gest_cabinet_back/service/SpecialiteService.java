@@ -3,7 +3,6 @@ package gest_cabinet_back.service;
 import gest_cabinet_back.repository.SpecialiteRepository;
 import gest_cabinet_back.model.Specialite;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -12,7 +11,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SpecialiteService {
 
-    private SpecialiteRepository specialiteRepository;
+    private final SpecialiteRepository specialiteRepository;
 
     public List<Specialite> findAll() {
         return specialiteRepository.findAll();
@@ -37,7 +36,5 @@ public class SpecialiteService {
         specialiteToUpdate.setDescription(specialite.getDescription());
         return save(specialiteToUpdate);
     }
-
-
 
 }
