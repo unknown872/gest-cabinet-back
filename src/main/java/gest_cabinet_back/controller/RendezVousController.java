@@ -106,7 +106,7 @@ public class RendezVousController {
      * La secrétaire (ou le personnel médical) rejette un rendez-vous (statut -> ABSENT).
      * Permet d'ajouter optionnellement des notes (motif du rejet / absence) dans le corps.
      */
-    @PreAuthorize("hasAnyRole('SECRETAIRE', 'MEDECIN', 'ADMINISTRATEUR')")
+    @PreAuthorize("hasAnyRole('SECRETAIRE', 'MEDECIN')")
     @PatchMapping("/{id}/rejeter")
     public ResponseEntity<RendezVousMedecinResponseDTO> rejeterRdv(
             @PathVariable Long id,
