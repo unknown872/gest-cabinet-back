@@ -4,6 +4,8 @@ import gest_cabinet_back.dto.RendezVousMedecinResponseDTO;
 import gest_cabinet_back.dto.RendezVousRequestDTO;
 import gest_cabinet_back.dto.RendezVousResponseDTO;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RendezVousService {
@@ -27,6 +29,10 @@ public interface RendezVousService {
     RendezVousMedecinResponseDTO rejeterRdv(Long rdvId);
     RendezVousMedecinResponseDTO rejeterRdv(Long rdvId, String notes);
     RendezVousMedecinResponseDTO modifierNotes(Long rdvId, String notes);
+
+    // --- Créneaux disponibles (M2.3.2 / M2.2.2) ---
+    // Renvoie directement des LocalDateTime complets (date + heure) : le client
+    // n'a qu'à recopier une valeur de la liste dans le champ dateHeure de sa
+    // requête de réservation, sans reconstruire la date lui-même.
+    List<LocalDateTime> getCreneauxDisponibles(Long medecinId, LocalDate date);
 }
-
-
