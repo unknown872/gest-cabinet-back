@@ -6,12 +6,15 @@ import gest_cabinet_back.dto.RendezVousResponseDTO;
 import gest_cabinet_back.security.CustomUserDetails;
 import gest_cabinet_back.service.RendezVousService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -22,13 +25,28 @@ public class RendezVousController {
     private final RendezVousService rendezVousService;
 
     // ================================================================
-    //  Actions MEDECIN
+    //  Créneaux disponibles (M2.3.2 / M2.2.2)
     // ================================================================
 
     /**
-     * POST /api/rendez-vous/medecin
-     * Le médecin prend un RDV pour un patient (patientId + dateHeure + motif dans le body).
+     * GET /api/rendez-vous/creneaux-disponibles?medecinId=X&date=YYYY-MM-DD
+     * Renvoie la liste des créneaux (date + heure) encore libres pour ce médecin
+     * ce jour-là, calculée à partir de ses disponibilités déclarées moins les
+     * rendez-vous déjà pris. Le patient (ou la secrétaire) choisit une valeur
+     * de cette liste et la recopie telle quelle dans dateHeure au moment de réserver.
      */
+    @PreAuthorize("hasAnyRole('PATIENT', 'SECRETAIRE', 'MEDECIN')")
+    @GetMapping("/creneaux-disponibles")
+    public ResponseEntity<List<LocalDateTime>> getCreneauxDisponibles(
+            @RequestParam Long medecinId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(rendezVousService.getCreneauxDisponibles(medecinId, date));
+    }
+
+    // ================================================================
+    //  Actions MEDECIN
+    // ================================================================
+
     @PreAuthorize("hasRole('MEDECIN')")
     @PostMapping("/medecin")
     public ResponseEntity<RendezVousMedecinResponseDTO> prendreRdvPourPatient(
@@ -39,10 +57,6 @@ public class RendezVousController {
                 .body(rendezVousService.prendreRdvPourPatient(dto, medecinId));
     }
 
-    /**
-     * GET /api/rendez-vous/medecin
-     * Le médecin liste uniquement les RDV CONFIRMÉS qui le concernent.
-     */
     @PreAuthorize("hasRole('MEDECIN')")
     @GetMapping("/medecin")
     public ResponseEntity<List<RendezVousMedecinResponseDTO>> listerRdvDuMedecin(Authentication authentication) {
@@ -50,10 +64,6 @@ public class RendezVousController {
         return ResponseEntity.ok(rendezVousService.listerRdvDuMedecin(medecinId));
     }
 
-    /**
-     * GET /api/rendez-vous/medecin/{id}
-     * Le médecin consulte le détail d'un RDV CONFIRMÉ qui le concerne.
-     */
     @PreAuthorize("hasRole('MEDECIN')")
     @GetMapping("/medecin/{id}")
     public ResponseEntity<RendezVousMedecinResponseDTO> consulterRdvMedecin(
@@ -67,31 +77,18 @@ public class RendezVousController {
     //  Actions SECRETAIRE
     // ================================================================
 
-    /**
-     * GET /api/rendez-vous/secretaire
-     * La secrétaire consulte tous les rendez-vous du cabinet avec les infos des patients.
-     */
     @PreAuthorize("hasAnyRole('SECRETAIRE')")
     @GetMapping("/secretaire")
     public ResponseEntity<List<RendezVousMedecinResponseDTO>> listerTousLesRdv() {
         return ResponseEntity.ok(rendezVousService.listerTousLesRdv());
     }
 
-    /**
-     * GET /api/rendez-vous/secretaire/{id}
-     * La secrétaire consulte le détail d'un rendez-vous avec toutes les infos du patient.
-     */
     @PreAuthorize("hasAnyRole('SECRETAIRE')")
     @GetMapping("/secretaire/{id}")
     public ResponseEntity<RendezVousMedecinResponseDTO> consulterRdvSecretaire(@PathVariable Long id) {
         return ResponseEntity.ok(rendezVousService.consulterRdvSecretaire(id));
     }
 
-    /**
-     * PATCH /api/rendez-vous/{id}/confirmer
-     * La secrétaire (ou le Medecin) confirme un rendez-vous (statut -> CONFIRME).
-     * Permet d'ajouter optionnellement des notes de confirmation dans le corps de la requête.
-     */
     @PreAuthorize("hasAnyRole('SECRETAIRE', 'MEDECIN')")
     @PatchMapping("/{id}/confirmer")
     public ResponseEntity<RendezVousMedecinResponseDTO> confirmerRdv(
@@ -101,11 +98,6 @@ public class RendezVousController {
         return ResponseEntity.ok(rendezVousService.confirmerRdv(id, notes));
     }
 
-    /**
-     * PATCH /api/rendez-vous/{id}/rejeter
-     * La secrétaire (ou le personnel médical) rejette un rendez-vous (statut -> ABSENT).
-     * Permet d'ajouter optionnellement des notes (motif du rejet / absence) dans le corps.
-     */
     @PreAuthorize("hasAnyRole('SECRETAIRE', 'MEDECIN', 'ADMINISTRATEUR')")
     @PatchMapping("/{id}/rejeter")
     public ResponseEntity<RendezVousMedecinResponseDTO> rejeterRdv(
@@ -115,10 +107,6 @@ public class RendezVousController {
         return ResponseEntity.ok(rendezVousService.rejeterRdv(id, notes));
     }
 
-    /**
-     * PATCH /api/rendez-vous/{id}/notes
-     * Met à jour ou ajoute des notes sur un rendez-vous (accessible aux secrétaires et médecins ).
-     */ 
     @PreAuthorize("hasAnyRole('SECRETAIRE', 'MEDECIN')")
     @PatchMapping("/{id}/notes")
     public ResponseEntity<RendezVousMedecinResponseDTO> modifierNotes(
@@ -131,10 +119,6 @@ public class RendezVousController {
     //  Actions PATIENT
     // ================================================================
 
-    /**
-     * POST /api/rendez-vous
-     * Le patient demande un RDV (medecinId + dateHeure + motif dans le body).
-     */
     @PreAuthorize("hasRole('PATIENT')")
     @PostMapping
     public ResponseEntity<RendezVousResponseDTO> demanderRdv(
@@ -145,10 +129,6 @@ public class RendezVousController {
                 .body(rendezVousService.demanderRdv(dto, patientId));
     }
 
-    /**
-     * GET /api/rendez-vous
-     * Le patient liste ses propres RDV.
-     */
     @PreAuthorize("hasRole('PATIENT')")
     @GetMapping
     public ResponseEntity<List<RendezVousResponseDTO>> listerMesRdv(Authentication authentication) {
@@ -156,10 +136,6 @@ public class RendezVousController {
         return ResponseEntity.ok(rendezVousService.listerMesRdv(patientId));
     }
 
-    /**
-     * GET /api/rendez-vous/{id}
-     * Le patient consulte le détail d'un de ses RDV.
-     */
     @PreAuthorize("hasRole('PATIENT')")
     @GetMapping("/{id}")
     public ResponseEntity<RendezVousResponseDTO> consulterRdvPatient(
@@ -169,10 +145,6 @@ public class RendezVousController {
         return ResponseEntity.ok(rendezVousService.consulterRdv(id, patientId));
     }
 
-    /**
-     * PATCH /api/rendez-vous/{id}/annuler
-     * Le patient annule un de ses RDV.
-     */
     @PreAuthorize("hasRole('PATIENT')")
     @PatchMapping("/{id}/annuler")
     public ResponseEntity<Void> annulerRdv(
