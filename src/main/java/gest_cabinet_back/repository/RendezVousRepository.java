@@ -18,6 +18,7 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
     Optional<RendezVous> findByIdAndMedecinId(Long id, Long medecinId);
     List<RendezVous> findByMedecinIdAndStatut(Long medecinId, StatutRdv statut);
     Optional<RendezVous> findByIdAndMedecinIdAndStatut(Long id, Long medecinId, StatutRdv statut);
+    boolean existsByPatientIdAndMedecinId(Long patientId, Long medecinId);
 
     // --- CALCUL DES CRÉNEAUX DISPONIBLES ---
     // Toutes les RDV d'un médecin sur une journée donnée (bornes incluses/exclues

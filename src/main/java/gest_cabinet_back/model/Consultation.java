@@ -25,9 +25,9 @@ public class Consultation {
 
     @Column(columnDefinition = "TEXT")
     private String diagnostic;
-    private double tension;
-    private double poids;
-    private double temperature;
+    private Double tension;
+    private Double poids;
+    private Double temperature;
 
     @Enumerated(EnumType.STRING)
     private StatutConsultation statut;
