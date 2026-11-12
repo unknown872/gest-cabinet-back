@@ -1,3 +1,4 @@
+
 package gest_cabinet_back.dto;
 
 import gest_cabinet_back.model.StatutRdv;
@@ -13,11 +14,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RendezVousResponseDTO {
+
     private Long id;
+
     private LocalDateTime dateHeure;
+
     private String motif;
+
     private String notes;
+
     private StatutRdv statut;
+
     private String nomMedecin;
+
     private String prenomMedecin;
 }
