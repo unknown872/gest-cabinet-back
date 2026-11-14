@@ -123,6 +123,7 @@ public class PlanningServiceImpl implements PlanningService {
     private DisponibiliteResponseDTO versDispoDto(DisponibiliteMedecin d) {
         Medecin m = d.getMedecin();
         return new DisponibiliteResponseDTO(
+                d.getId(),
                 m.getPrenom() + " " + m.getNom(),
                 d.getDateJour(),
                 d.getHeureDebut(),

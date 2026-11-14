@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DisponibiliteResponseDTO {
+    private Long id;
     private String medecinNomComplet;
     private LocalDate dateJour;
     private LocalTime heureDebut;
