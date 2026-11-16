@@ -14,20 +14,28 @@ public interface RendezVousService {
     RendezVousResponseDTO demanderRdv(RendezVousRequestDTO dto, Long patientId);
     List<RendezVousResponseDTO> listerMesRdv(Long patientId);
     RendezVousResponseDTO consulterRdv(Long rdvId, Long patientId);
+    RendezVousResponseDTO modifierMonRdv(Long rdvId, RendezVousRequestDTO dto, Long patientId);
     void annulerRdv(Long rdvId, Long patientId);
 
     // --- Actions MEDECIN ---
     RendezVousMedecinResponseDTO prendreRdvPourPatient(RendezVousRequestDTO dto, Long medecinId);
     List<RendezVousMedecinResponseDTO> listerRdvDuMedecin(Long medecinId);
+    List<RendezVousMedecinResponseDTO> listerPlanningMedecin(Long medecinId, LocalDate date);
     RendezVousMedecinResponseDTO consulterRdvMedecin(Long rdvId, Long medecinId);
 
     // --- Actions SECRETAIRE ---
+    RendezVousMedecinResponseDTO creerRdvParSecretaire(RendezVousRequestDTO dto);
     List<RendezVousMedecinResponseDTO> listerTousLesRdv();
+    List<RendezVousMedecinResponseDTO> listerRdvDuJour(LocalDate date);
     RendezVousMedecinResponseDTO consulterRdvSecretaire(Long rdvId);
     RendezVousMedecinResponseDTO confirmerRdv(Long rdvId);
     RendezVousMedecinResponseDTO confirmerRdv(Long rdvId, String notes);
     RendezVousMedecinResponseDTO rejeterRdv(Long rdvId);
     RendezVousMedecinResponseDTO rejeterRdv(Long rdvId, String notes);
+    RendezVousMedecinResponseDTO marquerPresence(Long rdvId);
+    RendezVousMedecinResponseDTO marquerAbsence(Long rdvId);
+    RendezVousMedecinResponseDTO annulerRdvSecretaire(Long rdvId, String notes);
+    RendezVousMedecinResponseDTO modifierRdvSecretaire(Long rdvId, RendezVousRequestDTO dto);
     RendezVousMedecinResponseDTO modifierNotes(Long rdvId, String notes);
 
     // --- Créneaux disponibles (M2.3.2 / M2.2.2) ---
