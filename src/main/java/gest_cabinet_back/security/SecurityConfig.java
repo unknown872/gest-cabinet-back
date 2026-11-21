@@ -1,4 +1,3 @@
-
 package gest_cabinet_back.security;
 
 import org.springframework.context.annotation.Bean;
@@ -41,9 +40,28 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/api/test/**"
                         ).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) -> {
+                            response.setStatus(401);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(
+                                    "{\"success\":false,\"message\":\"Authentification requise ou identifiants invalides.\","
+                                            + "\"errors\":[],\"statusCode\":401}");
+                        })
+                        .accessDeniedHandler((request, response, exception) -> {
+                            response.setStatus(403);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(
+                                    "{\"success\":false,\"message\":\"Vous n'êtes pas autorisé à effectuer cette action.\","
+                                            + "\"errors\":[],\"statusCode\":403}");
+                        })
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -55,7 +73,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:63342", "http://localhost:3000")
+                List.of("http://localhost:63342", "http://localhost:3000", "http://localhost:5173")
         );
 
         configuration.setAllowedMethods(

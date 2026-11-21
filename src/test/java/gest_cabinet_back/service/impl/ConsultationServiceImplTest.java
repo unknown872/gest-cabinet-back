@@ -4,6 +4,7 @@ import gest_cabinet_back.dto.ConsultationMedecinResponseDTO;
 import gest_cabinet_back.dto.ConsultationRequestDTO;
 import gest_cabinet_back.dto.ConsultationResponseDTO;
 import gest_cabinet_back.dto.ObservationComplementaireRequestDTO;
+import gest_cabinet_back.exception.ConflictException;
 import gest_cabinet_back.model.Consultation;
 import gest_cabinet_back.model.DossierMedical;
 import gest_cabinet_back.model.Medecin;
@@ -105,7 +106,7 @@ class ConsultationServiceImplTest {
         rdv.setStatut(StatutRdv.PLANIFIE);
         when(rendezVousRepository.findById(100L)).thenReturn(Optional.of(rdv));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(ConflictException.class,
                 () -> consultationService.demarrerConsultation(100L, null, 10L));
     }
 
@@ -130,7 +131,7 @@ class ConsultationServiceImplTest {
         ConsultationRequestDTO dto = new ConsultationRequestDTO(
                 "Nouveau motif", "Obs", "Diag", null, null, null);
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(ConflictException.class,
                 () -> consultationService.modifierConsultation(1L, dto, 10L));
     }
 

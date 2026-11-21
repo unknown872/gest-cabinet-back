@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/rendez-vous")
@@ -55,7 +56,7 @@ public class RendezVousController {
     @PreAuthorize("hasRole('MEDECIN')")
     @PostMapping("/medecin")
     public ResponseEntity<RendezVousMedecinResponseDTO> prendreRdvPourPatient(
-            @RequestBody RendezVousRequestDTO dto,
+            @Valid @RequestBody RendezVousRequestDTO dto,
             Authentication authentication) {
         Long medecinId = getId(authentication);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -98,7 +99,7 @@ public class RendezVousController {
     @PreAuthorize("hasAnyRole('SECRETAIRE')")
     @PostMapping("/secretaire")
     public ResponseEntity<RendezVousMedecinResponseDTO> creerRdvParSecretaire(
-            @RequestBody RendezVousRequestDTO dto) {
+            @Valid @RequestBody RendezVousRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(rendezVousService.creerRdvParSecretaire(dto));
     }
@@ -130,7 +131,7 @@ public class RendezVousController {
     @PatchMapping("/{id}/confirmer")
     public ResponseEntity<RendezVousMedecinResponseDTO> confirmerRdv(
             @PathVariable Long id,
-            @RequestBody(required = false) RendezVousRequestDTO dto) {
+            @Valid @RequestBody(required = false) RendezVousRequestDTO dto) {
         String notes = (dto != null) ? dto.getNotes() : null;
         return ResponseEntity.ok(rendezVousService.confirmerRdv(id, notes));
     }
@@ -154,7 +155,7 @@ public class RendezVousController {
     @PatchMapping("/secretaire/{id}/annuler")
     public ResponseEntity<RendezVousMedecinResponseDTO> annulerRdvSecretaire(
             @PathVariable Long id,
-            @RequestBody(required = false) RendezVousRequestDTO dto) {
+            @Valid @RequestBody(required = false) RendezVousRequestDTO dto) {
         String notes = (dto != null) ? dto.getNotes() : null;
         return ResponseEntity.ok(rendezVousService.annulerRdvSecretaire(id, notes));
     }
@@ -164,7 +165,7 @@ public class RendezVousController {
     @PutMapping("/secretaire/{id}")
     public ResponseEntity<RendezVousMedecinResponseDTO> modifierRdvSecretaire(
             @PathVariable Long id,
-            @RequestBody RendezVousRequestDTO dto) {
+            @Valid @RequestBody RendezVousRequestDTO dto) {
         return ResponseEntity.ok(rendezVousService.modifierRdvSecretaire(id, dto));
     }
 
@@ -173,7 +174,7 @@ public class RendezVousController {
     @PatchMapping("/{id}/notes")
     public ResponseEntity<RendezVousMedecinResponseDTO> modifierNotes(
             @PathVariable Long id,
-            @RequestBody RendezVousRequestDTO dto) {
+            @Valid @RequestBody RendezVousRequestDTO dto) {
         return ResponseEntity.ok(rendezVousService.modifierNotes(id, dto.getNotes()));
     }
 
@@ -185,7 +186,7 @@ public class RendezVousController {
     @PreAuthorize("hasRole('PATIENT')")
     @PostMapping
     public ResponseEntity<RendezVousResponseDTO> demanderRdv(
-            @RequestBody RendezVousRequestDTO dto,
+            @Valid @RequestBody RendezVousRequestDTO dto,
             Authentication authentication) {
         Long patientId = getId(authentication);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -215,7 +216,7 @@ public class RendezVousController {
     @PutMapping("/{id}")
     public ResponseEntity<RendezVousResponseDTO> modifierMonRdv(
             @PathVariable Long id,
-            @RequestBody RendezVousRequestDTO dto,
+            @Valid @RequestBody RendezVousRequestDTO dto,
             Authentication authentication) {
         Long patientId = getId(authentication);
         return ResponseEntity.ok(rendezVousService.modifierMonRdv(id, dto, patientId));

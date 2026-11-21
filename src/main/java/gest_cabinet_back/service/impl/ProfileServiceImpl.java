@@ -4,6 +4,7 @@ import gest_cabinet_back.dto.ProfileResponseDTO;
 import gest_cabinet_back.model.Utilisateur;
 import gest_cabinet_back.repository.UtilisateurRepository;
 import gest_cabinet_back.service.ProfileService;
+import gest_cabinet_back.exception.RessourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class ProfileServiceImpl implements ProfileService {
         Utilisateur utilisateur = utilisateurRepository
                 .findByEmail(email)
                 .orElseThrow(() ->
-                        new RuntimeException("Utilisateur introuvable"));
+                        new RessourceNotFoundException("Utilisateur introuvable."));
 
         return new ProfileResponseDTO(
                 utilisateur.getNom(),

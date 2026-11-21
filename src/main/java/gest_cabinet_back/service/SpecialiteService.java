@@ -2,6 +2,7 @@ package gest_cabinet_back.service;
 
 import gest_cabinet_back.repository.SpecialiteRepository;
 import gest_cabinet_back.model.Specialite;
+import gest_cabinet_back.exception.RessourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,8 @@ public class SpecialiteService {
     }
 
     public Specialite findById(Long id){
-        return specialiteRepository.findById(id).orElse(null);
+        return specialiteRepository.findById(id)
+                .orElseThrow(() -> new RessourceNotFoundException("Spécialité introuvable : " + id));
     }
 
     public Specialite save(Specialite specialite){
@@ -26,6 +28,7 @@ public class SpecialiteService {
     }
 
     public boolean delete(Long id){
+        findById(id);
         specialiteRepository.deleteById(id);
         return true;
     }

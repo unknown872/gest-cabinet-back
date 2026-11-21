@@ -10,6 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/specialites")
@@ -18,13 +20,13 @@ public class SpecialiteController {
 
     private final SpecialiteService specialiteService;
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATEUR','MEDECIN','SECRETAIRE')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATEUR','MEDECIN','SECRETAIRE', 'PATIENT')")
     @GetMapping
     public List<Specialite> findAll() {
         return specialiteService.findAll();
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATEUR','MEDECIN','SECRETAIRE')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATEUR','MEDECIN','SECRETAIRE', 'PATIENT')")
     @GetMapping("/{id}")
     public Specialite findById(@PathVariable Long id) {
         return specialiteService.findById(id);
@@ -32,14 +34,16 @@ public class SpecialiteController {
 
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Specialite save(@RequestBody Specialite specialite) {
         return specialiteService.save(specialite);
     }
 
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     @DeleteMapping("/{id}")
-    public boolean delete(@PathVariable Long id) {
-        return specialiteService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        specialiteService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('ADMINISTRATEUR')")

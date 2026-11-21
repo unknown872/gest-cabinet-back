@@ -5,13 +5,9 @@ import gest_cabinet_back.dto.LoginResponseDTO;
 import gest_cabinet_back.model.Utilisateur;
 import gest_cabinet_back.security.CustomUserDetails;
 import gest_cabinet_back.security.JwtUtil;
-import gest_cabinet_back.service.AuthService;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,14 +23,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        Authentication authentication;
-        try {
-            authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getMotDePasse())
-            );
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Email ou mot de passe incorrect.");
-        }
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getMotDePasse())
+        );
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Utilisateur utilisateur = userDetails.getUtilisateur();

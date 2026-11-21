@@ -5,6 +5,9 @@ import gest_cabinet_back.service.MedecinService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -26,6 +29,7 @@ public class MedecinController {
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     @Operation(summary = "Save a new medecin")
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Medecin save(@RequestBody Medecin medecin) {
         return medecinService.save(medecin);
     }
@@ -33,8 +37,9 @@ public class MedecinController {
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     @Operation(summary = "Delete a medecin by id")
     @DeleteMapping("/{id}")
-    public boolean delete(@PathVariable Long id) {
-        return medecinService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        medecinService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

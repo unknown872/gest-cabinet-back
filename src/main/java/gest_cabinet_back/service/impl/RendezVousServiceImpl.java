@@ -4,6 +4,8 @@ import gest_cabinet_back.dto.RendezVousMedecinResponseDTO;
 import gest_cabinet_back.dto.RendezVousRequestDTO;
 import gest_cabinet_back.dto.RendezVousResponseDTO;
 import gest_cabinet_back.exception.RessourceNotFoundException;
+import gest_cabinet_back.exception.BadRequestException;
+import gest_cabinet_back.exception.ConflictException;
 import gest_cabinet_back.model.DisponibiliteMedecin;
 import gest_cabinet_back.model.Medecin;
 import gest_cabinet_back.model.Patient;
@@ -95,13 +97,13 @@ public class RendezVousServiceImpl implements RendezVousService {
                         "Rendez-vous introuvable avec l'id : " + rdvId + " pour ce patient"));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Impossible de modifier un rendez-vous annulé.");
+            throw new ConflictException("Impossible de modifier un rendez-vous annulé.");
         }
         if (rdv.getStatut() == StatutRdv.HONORE_PRESENT) {
-            throw new IllegalStateException("Impossible de modifier un rendez-vous déjà honoré.");
+            throw new ConflictException("Impossible de modifier un rendez-vous déjà honoré.");
         }
         if (rdv.getStatut() == StatutRdv.ABSENT) {
-            throw new IllegalStateException("Impossible de modifier un rendez-vous marqué absent.");
+            throw new ConflictException("Impossible de modifier un rendez-vous marqué absent.");
         }
 
         // RG06 : Le patient ne peut modifier lui-même que jusqu'à 24h avant l'heure prévue
@@ -138,13 +140,13 @@ public class RendezVousServiceImpl implements RendezVousService {
                         "Rendez-vous introuvable avec l'id : " + rdvId + " pour ce patient"));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Ce rendez-vous est déjà annulé.");
+            throw new ConflictException("Ce rendez-vous est déjà annulé.");
         }
         if (rdv.getStatut() == StatutRdv.HONORE_PRESENT) {
-            throw new IllegalStateException("Impossible d'annuler un rendez-vous déjà honoré.");
+            throw new ConflictException("Impossible d'annuler un rendez-vous déjà honoré.");
         }
         if (rdv.getStatut() == StatutRdv.ABSENT) {
-            throw new IllegalStateException("Impossible d'annuler un rendez-vous marqué absent.");
+            throw new ConflictException("Impossible d'annuler un rendez-vous marqué absent.");
         }
 
         // RG06 : Le patient ne peut annuler lui-même que jusqu'à 24h avant l'heure prévue
@@ -161,13 +163,13 @@ public class RendezVousServiceImpl implements RendezVousService {
     @Override
     public RendezVousMedecinResponseDTO prendreRdvPourPatient(RendezVousRequestDTO dto, Long medecinConnecteId) {
         if (dto.getMedecinId() == null) {
-            throw new IllegalArgumentException("Le champ medecinId est obligatoire pour prendre un rendez-vous.");
+            throw new BadRequestException("Le champ medecinId est obligatoire pour prendre un rendez-vous.");
         }
         Medecin medecinCible = medecinRepository.findById(dto.getMedecinId())
                 .orElseThrow(() -> new RessourceNotFoundException("Médecin introuvable avec l'id : " + dto.getMedecinId()));
 
         if (dto.getPatientId() == null) {
-            throw new IllegalArgumentException("Le champ patientId est obligatoire.");
+            throw new BadRequestException("Le champ patientId est obligatoire.");
         }
         Patient patient = patientRepository.findById(dto.getPatientId())
                 .orElseThrow(() -> new RessourceNotFoundException("Patient introuvable avec l'id : " + dto.getPatientId()));
@@ -230,13 +232,13 @@ public class RendezVousServiceImpl implements RendezVousService {
     @Override
     public RendezVousMedecinResponseDTO creerRdvParSecretaire(RendezVousRequestDTO dto) {
         if (dto.getMedecinId() == null) {
-            throw new IllegalArgumentException("Le champ medecinId est obligatoire.");
+            throw new BadRequestException("Le champ medecinId est obligatoire.");
         }
         Medecin medecin = medecinRepository.findById(dto.getMedecinId())
                 .orElseThrow(() -> new RessourceNotFoundException("Médecin introuvable avec l'id : " + dto.getMedecinId()));
 
         if (dto.getPatientId() == null) {
-            throw new IllegalArgumentException("Le champ patientId est obligatoire.");
+            throw new BadRequestException("Le champ patientId est obligatoire.");
         }
         Patient patient = patientRepository.findById(dto.getPatientId())
                 .orElseThrow(() -> new RessourceNotFoundException("Patient introuvable avec l'id : " + dto.getPatientId()));
@@ -301,10 +303,10 @@ public class RendezVousServiceImpl implements RendezVousService {
                 .orElseThrow(() -> new RessourceNotFoundException("Rendez-vous introuvable avec l'id : " + rdvId));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Impossible de confirmer un rendez-vous annulé.");
+            throw new ConflictException("Impossible de confirmer un rendez-vous annulé.");
         }
         if (rdv.getStatut() == StatutRdv.HONORE_PRESENT) {
-            throw new IllegalStateException("Le rendez-vous a déjà été honoré.");
+            throw new ConflictException("Le rendez-vous a déjà été honoré.");
         }
 
         rdv.setStatut(StatutRdv.CONFIRME);
@@ -326,10 +328,10 @@ public class RendezVousServiceImpl implements RendezVousService {
                 .orElseThrow(() -> new RessourceNotFoundException("Rendez-vous introuvable avec l'id : " + rdvId));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Impossible de rejeter un rendez-vous déjà annulé.");
+            throw new ConflictException("Impossible de rejeter un rendez-vous déjà annulé.");
         }
         if (rdv.getStatut() == StatutRdv.HONORE_PRESENT) {
-            throw new IllegalStateException("Impossible de rejeter un rendez-vous déjà honoré.");
+            throw new ConflictException("Impossible de rejeter un rendez-vous déjà honoré.");
         }
 
         rdv.setStatut(StatutRdv.ANNULE);
@@ -346,10 +348,10 @@ public class RendezVousServiceImpl implements RendezVousService {
                 .orElseThrow(() -> new RessourceNotFoundException("Rendez-vous introuvable avec l'id : " + rdvId));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Impossible de marquer présent un rendez-vous annulé.");
+            throw new ConflictException("Impossible de marquer présent un rendez-vous annulé.");
         }
         if (rdv.getStatut() == StatutRdv.ABSENT) {
-            throw new IllegalStateException("Impossible de marquer présent un rendez-vous déjà marqué absent.");
+            throw new ConflictException("Impossible de marquer présent un rendez-vous déjà marqué absent.");
         }
 
         rdv.setStatut(StatutRdv.HONORE_PRESENT);
@@ -363,16 +365,16 @@ public class RendezVousServiceImpl implements RendezVousService {
                 .orElseThrow(() -> new RessourceNotFoundException("Rendez-vous introuvable avec l'id : " + rdvId));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Impossible de marquer absent un rendez-vous annulé.");
+            throw new ConflictException("Impossible de marquer absent un rendez-vous annulé.");
         }
         if (rdv.getStatut() == StatutRdv.HONORE_PRESENT) {
-            throw new IllegalStateException("Impossible de marquer absent un rendez-vous déjà honoré.");
+            throw new ConflictException("Impossible de marquer absent un rendez-vous déjà honoré.");
         }
 
         rdv.setStatut(StatutRdv.ABSENT);
         RendezVous saved = rendezVousRepository.save(rdv);
         return verserDtoRdvMedecin(saved);
-        
+
     }
 
     @Override
@@ -381,10 +383,10 @@ public class RendezVousServiceImpl implements RendezVousService {
                 .orElseThrow(() -> new RessourceNotFoundException("Rendez-vous introuvable avec l'id : " + rdvId));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Ce rendez-vous est déjà annulé.");
+            throw new ConflictException("Ce rendez-vous est déjà annulé.");
         }
         if (rdv.getStatut() == StatutRdv.HONORE_PRESENT) {
-            throw new IllegalStateException("Impossible d'annuler un rendez-vous déjà honoré.");
+            throw new ConflictException("Impossible d'annuler un rendez-vous déjà honoré.");
         }
 
         rdv.setStatut(StatutRdv.ANNULE);
@@ -401,10 +403,10 @@ public class RendezVousServiceImpl implements RendezVousService {
                 .orElseThrow(() -> new RessourceNotFoundException("Rendez-vous introuvable avec l'id : " + rdvId));
 
         if (rdv.getStatut() == StatutRdv.ANNULE) {
-            throw new IllegalStateException("Impossible de modifier un rendez-vous annulé.");
+            throw new ConflictException("Impossible de modifier un rendez-vous annulé.");
         }
         if (rdv.getStatut() == StatutRdv.HONORE_PRESENT) {
-            throw new IllegalStateException("Impossible de modifier un rendez-vous déjà honoré.");
+            throw new ConflictException("Impossible de modifier un rendez-vous déjà honoré.");
         }
 
         if (dto.getDateHeure() != null && !dto.getDateHeure().equals(rdv.getDateHeure())) {
@@ -447,6 +449,12 @@ public class RendezVousServiceImpl implements RendezVousService {
     @Override
     @Transactional(readOnly = true)
     public List<LocalDateTime> getCreneauxDisponibles(Long medecinId, LocalDate date) {
+        if (medecinId == null || date == null) {
+            throw new BadRequestException("Le médecin et la date sont obligatoires.");
+        }
+        medecinRepository.findById(medecinId)
+                .orElseThrow(() -> new RessourceNotFoundException("Médecin introuvable avec l'id : " + medecinId));
+
         List<DisponibiliteMedecin> disponibilites =
                 disponibiliteRepository.findByMedecinIdAndDateJourOrderByHeureDebutAsc(medecinId, date);
 
@@ -475,7 +483,7 @@ public class RendezVousServiceImpl implements RendezVousService {
      * Vérifie que la dateHeure demandée correspond à un créneau réellement
      * déclaré par le médecin ET qu'il n'est pas déjà pris (RG03/RG04).
      * Lève IllegalArgumentException sinon.
-     *
+     * <p>
      * Limite connue : cette vérification se fait en lecture avant l'insertion,
      * elle ne protège donc pas encore totalement contre une double réservation
      * strictement simultanée (il faudrait une contrainte d'unicité en base pour
@@ -484,7 +492,7 @@ public class RendezVousServiceImpl implements RendezVousService {
      */
     private void validerCreneauDisponible(Long medecinId, LocalDateTime dateHeure) {
         if (dateHeure == null) {
-            throw new IllegalArgumentException("La date et l'heure du rendez-vous sont obligatoires.");
+            throw new BadRequestException("La date et l'heure du rendez-vous sont obligatoires.");
         }
 
         LocalDate date = dateHeure.toLocalDate();
@@ -505,13 +513,13 @@ public class RendezVousServiceImpl implements RendezVousService {
         });
 
         if (!correspondAUneDisponibilite) {
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     "Ce créneau (" + heure + " le " + date + ") ne correspond à aucune disponibilité déclarée par ce médecin."
             );
         }
 
         if (heuresOccupees(medecinId, date).contains(heure)) {
-            throw new IllegalArgumentException(
+            throw new ConflictException(
                     "Ce créneau (" + heure + " le " + date + ") est déjà réservé."
             );
         }
@@ -544,15 +552,15 @@ public class RendezVousServiceImpl implements RendezVousService {
      */
     private void validerDelaiReservation(LocalDateTime dateHeure) {
         if (dateHeure == null) {
-            throw new IllegalArgumentException("La date et l'heure du rendez-vous sont obligatoires.");
+            throw new BadRequestException("La date et l'heure du rendez-vous sont obligatoires.");
         }
         LocalDateTime maintenant = LocalDateTime.now();
         if (dateHeure.isBefore(maintenant)) {
-            throw new IllegalArgumentException("La date et l'heure du rendez-vous doivent être dans le futur.");
+            throw new BadRequestException("La date et l'heure du rendez-vous doivent être dans le futur.");
         }
         LocalDate dateLimite = maintenant.toLocalDate().plusDays(90);
         if (dateHeure.toLocalDate().isAfter(dateLimite)) {
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     "Impossible de réserver un rendez-vous au-delà de 90 jours (date limite : " + dateLimite + ").");
         }
     }
@@ -568,7 +576,7 @@ public class RendezVousServiceImpl implements RendezVousService {
                 List.of(StatutRdv.PLANIFIE, StatutRdv.CONFIRME)
         );
         if (rdvAVenir >= 3) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Vous avez déjà " + rdvAVenir + " rendez-vous à venir (limite maximale autorisée : 3).");
         }
     }
@@ -580,7 +588,7 @@ public class RendezVousServiceImpl implements RendezVousService {
     private void validerDelaiModificationAnnulationPatient(LocalDateTime dateHeureRdv, String action) {
         LocalDateTime limite = LocalDateTime.now().plusHours(24);
         if (dateHeureRdv.isBefore(limite)) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Impossible de " + action + " ce rendez-vous à moins de 24 heures de l'heure prévue. "
                             + "Veuillez contacter le secrétariat du cabinet.");
         }
@@ -597,7 +605,7 @@ public class RendezVousServiceImpl implements RendezVousService {
                 patientId, StatutRdv.ABSENT, debut12Mois, maintenant);
 
         if (nbAbsences >= 3) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Votre compte est bloqué pour la prise de rendez-vous en ligne suite à " + nbAbsences
                             + " absences non justifiées sur les 12 derniers mois. Veuillez contacter le cabinet médical.");
         }
