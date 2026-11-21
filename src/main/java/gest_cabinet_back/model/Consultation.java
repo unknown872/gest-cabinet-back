@@ -2,6 +2,8 @@ package gest_cabinet_back.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +41,9 @@ public class Consultation {
     @ManyToOne
     @JoinColumn(name = "dossier_medical_id", nullable = false)
     private DossierMedical dossierMedical;
+
+    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prescription> prescriptions = new ArrayList<>();
 
 
 }
