@@ -2,6 +2,7 @@ package gest_cabinet_back.service;
 
 import gest_cabinet_back.model.Medecin;
 import gest_cabinet_back.repository.MedecinRepository;
+import gest_cabinet_back.exception.RessourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,8 @@ public class MedecinService {
     }
 
     public Medecin findById(Long id) {
-        return medecinRepository.findById(id).orElse(null);
+        return medecinRepository.findById(id)
+                .orElseThrow(() -> new RessourceNotFoundException("Médecin introuvable : " + id));
     }
 
     public Medecin save(Medecin medecin) {
@@ -26,6 +28,7 @@ public class MedecinService {
     }
 
     public boolean delete(Long id) {
+        findById(id);
         medecinRepository.deleteById(id);
         return true;
     }

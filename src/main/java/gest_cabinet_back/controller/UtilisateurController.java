@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 
 import java.util.*;
 
@@ -33,7 +34,7 @@ public class UtilisateurController {
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UtilisateurResponseDTO creer(@RequestBody UtilisateurRequestDTO dto) {
+    public UtilisateurResponseDTO creer(@Valid @RequestBody UtilisateurRequestDTO dto) {
         return utilisateurService.creer(dto);
     }
 

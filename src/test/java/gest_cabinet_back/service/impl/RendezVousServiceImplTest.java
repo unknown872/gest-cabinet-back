@@ -3,6 +3,9 @@ package gest_cabinet_back.service.impl;
 import gest_cabinet_back.dto.RendezVousMedecinResponseDTO;
 import gest_cabinet_back.dto.RendezVousRequestDTO;
 import gest_cabinet_back.dto.RendezVousResponseDTO;
+import gest_cabinet_back.exception.BadRequestException;
+import gest_cabinet_back.exception.ConflictException;
+import gest_cabinet_back.exception.RessourceNotFoundException;
 import gest_cabinet_back.model.DisponibiliteMedecin;
 import gest_cabinet_back.model.Medecin;
 import gest_cabinet_back.model.Patient;
@@ -83,7 +86,7 @@ class RendezVousServiceImplTest {
         dto.setMedecinId(1L);
         dto.setDateHeure(LocalDateTime.now().minusHours(2));
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+        BadRequestException ex = assertThrows(BadRequestException.class,
                 () -> rendezVousService.demanderRdv(dto, 2L));
         assertTrue(ex.getMessage().contains("futur"));
     }
@@ -97,7 +100,7 @@ class RendezVousServiceImplTest {
         dto.setMedecinId(1L);
         dto.setDateHeure(LocalDateTime.now().plusDays(95));
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+        BadRequestException ex = assertThrows(BadRequestException.class,
                 () -> rendezVousService.demanderRdv(dto, 2L));
         assertTrue(ex.getMessage().contains("90 jours"));
     }
@@ -123,7 +126,7 @@ class RendezVousServiceImplTest {
         dto.setMedecinId(1L);
         dto.setDateHeure(LocalDateTime.now().plusDays(5).withHour(10).withMinute(0));
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
+        ConflictException ex = assertThrows(ConflictException.class,
                 () -> rendezVousService.demanderRdv(dto, 2L));
         assertTrue(ex.getMessage().contains("limite maximale autorisée : 3"));
     }
@@ -145,7 +148,7 @@ class RendezVousServiceImplTest {
         dto.setMedecinId(1L);
         dto.setDateHeure(LocalDateTime.now().plusDays(2).withHour(9).withMinute(0));
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
+        ConflictException ex = assertThrows(ConflictException.class,
                 () -> rendezVousService.demanderRdv(dto, 2L));
         assertTrue(ex.getMessage().contains("bloqué"));
     }
@@ -166,7 +169,7 @@ class RendezVousServiceImplTest {
 
         when(rendezVousRepository.findByIdAndPatientId(50L, 2L)).thenReturn(Optional.of(rdv));
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
+        ConflictException ex = assertThrows(ConflictException.class,
                 () -> rendezVousService.annulerRdv(50L, 2L));
         assertTrue(ex.getMessage().contains("24 heures"));
     }
@@ -204,7 +207,7 @@ class RendezVousServiceImplTest {
         RendezVousRequestDTO dto = new RendezVousRequestDTO();
         dto.setMotif("Nouveau motif");
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
+        ConflictException ex = assertThrows(ConflictException.class,
                 () -> rendezVousService.modifierMonRdv(50L, dto, 2L));
         assertTrue(ex.getMessage().contains("24 heures"));
     }
@@ -260,5 +263,13 @@ class RendezVousServiceImplTest {
         RendezVousMedecinResponseDTO resp = rendezVousService.annulerRdvSecretaire(50L, "Annulé par secrétaire");
 
         assertEquals(StatutRdv.ANNULE, resp.getStatut());
+    }
+
+    @Test
+    void getCreneauxDisponibles_refuseMedecinInexistant() {
+        when(medecinRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(RessourceNotFoundException.class,
+                () -> rendezVousService.getCreneauxDisponibles(999L, LocalDate.now()));
     }
 }

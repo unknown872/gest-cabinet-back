@@ -6,9 +6,9 @@ import gest_cabinet_back.dto.UtilisateurResponseDTO;
 import gest_cabinet_back.model.Role;
 import gest_cabinet_back.service.AuthService;
 import gest_cabinet_back.service.UtilisateurService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,25 +26,21 @@ public class AuthController {
     //POST /api/auth/login
     @PostMapping("/register")
     @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.CREATED)
-    public UtilisateurResponseDTO register(@RequestBody UtilisateurRequestDTO dto) {
+    public UtilisateurResponseDTO register(@Valid @RequestBody UtilisateurRequestDTO dto) {
         dto.setRole(Role.PATIENT);
         return utilisateurService.creer(dto);
     }
 
     //POST /api/auth/login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto) {
-        try {
-            return ResponseEntity.ok(authService.login(dto));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public ResponseEntity<gest_cabinet_back.dto.LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
+        return ResponseEntity.ok(authService.login(dto));
     }
 
     // POST /api/auth/logout
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 

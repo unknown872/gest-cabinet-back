@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/consultations")
@@ -35,7 +36,7 @@ public class ConsultationController {
     @PostMapping("/rendez-vous/{rendezVousId}")
     public ResponseEntity<ConsultationMedecinResponseDTO> demarrerConsultation(
             @PathVariable Long rendezVousId,
-            @RequestBody(required = false) ConsultationRequestDTO dto,
+            @Valid @RequestBody(required = false) ConsultationRequestDTO dto,
             Authentication authentication) {
         Long medecinId = getId(authentication);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -47,7 +48,7 @@ public class ConsultationController {
     @PutMapping("/{id}")
     public ResponseEntity<ConsultationMedecinResponseDTO> modifierConsultation(
             @PathVariable Long id,
-            @RequestBody ConsultationRequestDTO dto,
+            @Valid @RequestBody ConsultationRequestDTO dto,
             Authentication authentication) {
         Long medecinId = getId(authentication);
         return ResponseEntity.ok(consultationService.modifierConsultation(id, dto, medecinId));
@@ -78,7 +79,7 @@ public class ConsultationController {
     @PostMapping("/{id}/observations")
     public ResponseEntity<ConsultationMedecinResponseDTO> ajouterObservationComplementaire(
             @PathVariable Long id,
-            @RequestBody ObservationComplementaireRequestDTO dto,
+            @Valid @RequestBody ObservationComplementaireRequestDTO dto,
             Authentication authentication) {
         Long medecinId = getId(authentication);
         return ResponseEntity.ok(

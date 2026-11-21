@@ -5,6 +5,8 @@ import gest_cabinet_back.dto.ConsultationRequestDTO;
 import gest_cabinet_back.dto.ConsultationResponseDTO;
 import gest_cabinet_back.dto.ObservationComplementaireRequestDTO;
 import gest_cabinet_back.exception.RessourceNotFoundException;
+import gest_cabinet_back.exception.BadRequestException;
+import gest_cabinet_back.exception.ConflictException;
 import gest_cabinet_back.model.Consultation;
 import gest_cabinet_back.model.DossierMedical;
 import gest_cabinet_back.model.Medecin;
@@ -57,13 +59,13 @@ public class ConsultationServiceImpl implements ConsultationService {
         }
 
         if (rdv.getStatut() != StatutRdv.CONFIRME) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Impossible de démarrer une consultation : le rendez-vous doit être au statut CONFIRME (statut actuel : "
                             + rdv.getStatut() + ").");
         }
 
         if (consultationRepository.existsByRendezVousId(rendezVousId)) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Une consultation existe déjà pour le rendez-vous : " + rendezVousId);
         }
 
@@ -96,13 +98,13 @@ public class ConsultationServiceImpl implements ConsultationService {
     public ConsultationMedecinResponseDTO modifierConsultation(
             Long consultationId, ConsultationRequestDTO dto, Long medecinId) {
         if (dto == null) {
-            throw new IllegalArgumentException("Les données de mise à jour sont obligatoires.");
+            throw new BadRequestException("Les données de mise à jour sont obligatoires.");
         }
 
         Consultation consultation = trouverConsultationEtVerifierMedecin(consultationId, medecinId);
 
         if (consultation.getStatut() != StatutConsultation.EN_COURS) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Impossible de modifier une consultation au statut " + consultation.getStatut()
                             + ". Utilisez l'ajout d'observation complémentaire pour une consultation clôturée.");
         }
@@ -134,7 +136,7 @@ public class ConsultationServiceImpl implements ConsultationService {
         Consultation consultation = trouverConsultationEtVerifierMedecin(consultationId, medecinId);
 
         if (consultation.getStatut() != StatutConsultation.EN_COURS) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Impossible de clôturer une consultation au statut " + consultation.getStatut() + ".");
         }
 
@@ -152,7 +154,7 @@ public class ConsultationServiceImpl implements ConsultationService {
         Consultation consultation = trouverConsultationEtVerifierMedecin(consultationId, medecinId);
 
         if (consultation.getStatut() != StatutConsultation.EN_COURS) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "Impossible d'annuler une consultation au statut " + consultation.getStatut() + ".");
         }
 
@@ -164,13 +166,13 @@ public class ConsultationServiceImpl implements ConsultationService {
     public ConsultationMedecinResponseDTO ajouterObservationComplementaire(
             Long consultationId, ObservationComplementaireRequestDTO dto, Long medecinId) {
         if (dto == null || dto.getObservation() == null || dto.getObservation().isBlank()) {
-            throw new IllegalArgumentException("L'observation complémentaire ne peut pas être vide.");
+            throw new BadRequestException("L'observation complémentaire ne peut pas être vide.");
         }
 
         Consultation consultation = trouverConsultationEtVerifierMedecin(consultationId, medecinId);
 
         if (consultation.getStatut() != StatutConsultation.TERMINEE) {
-            throw new IllegalStateException(
+            throw new ConflictException(
                     "L'ajout d'observation complémentaire s'applique uniquement aux consultations clôturées.");
         }
 

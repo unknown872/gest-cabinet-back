@@ -10,6 +10,8 @@ import gest_cabinet_back.model.Utilisateur;
 import gest_cabinet_back.repository.UtilisateurRepository;
 import gest_cabinet_back.service.UtilisateurService;
 import gest_cabinet_back.exception.RessourceNotFoundException;
+import gest_cabinet_back.exception.ConflictException;
+import gest_cabinet_back.exception.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +48,12 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     @Transactional
     public UtilisateurResponseDTO creer(UtilisateurRequestDTO dto) {
+        if (dto.getRole() == null) {
+            throw new BadRequestException("Le rôle de l'utilisateur est obligatoire.");
+        }
 
         if (utilisateurRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException(
+            throw new ConflictException(
                     "Un compte existe déjà avec cet email."
             );
         }

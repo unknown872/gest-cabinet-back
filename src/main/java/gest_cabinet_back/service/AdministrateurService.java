@@ -2,6 +2,7 @@ package gest_cabinet_back.service;
 
 import gest_cabinet_back.model.Administrateur;
 import gest_cabinet_back.repository.AdministrateurRepository;
+import gest_cabinet_back.exception.RessourceNotFoundException;
 
 import java.util.*;
 
@@ -19,7 +20,8 @@ public class AdministrateurService {
     }
 
     public Administrateur findById(Long id) {
-        return administrateurRepository.findById(id).orElse(null);
+        return administrateurRepository.findById(id)
+                .orElseThrow(() -> new RessourceNotFoundException("Administrateur introuvable : " + id));
     }
 
     public Administrateur save(Administrateur administrateur) {
@@ -27,6 +29,7 @@ public class AdministrateurService {
     }
 
     public boolean delete(Long id) {
+        findById(id);
         administrateurRepository.deleteById(id);
         return true;
     }

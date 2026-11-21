@@ -3,6 +3,7 @@ package gest_cabinet_back.service.impl;
 import gest_cabinet_back.dto.DisponibiliteRequestDTO;
 import gest_cabinet_back.dto.DisponibiliteResponseDTO;
 import gest_cabinet_back.exception.RessourceNotFoundException;
+import gest_cabinet_back.exception.BadRequestException;
 import gest_cabinet_back.model.DisponibiliteMedecin;
 import gest_cabinet_back.model.Medecin;
 import gest_cabinet_back.repository.DisponibiliteMedecinRepository;
@@ -10,6 +11,7 @@ import gest_cabinet_back.repository.MedecinRepository;
 import gest_cabinet_back.service.PlanningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -86,20 +88,20 @@ public class PlanningServiceImpl implements PlanningService {
         DisponibiliteMedecin dispo = disponibiliteRepository.findById(disponibiliteId)
                 .orElseThrow(() -> new RessourceNotFoundException("Disponibilité introuvable : " + disponibiliteId));
         if (!dispo.getMedecin().getId().equals(medecinId)) {
-            throw new IllegalArgumentException("Vous ne pouvez modifier ou supprimer que vos propres disponibilités.");
+            throw new AccessDeniedException("Vous ne pouvez modifier ou supprimer que vos propres disponibilités.");
         }
         return dispo;
     }
 
     private void validerPlageHoraire(DisponibiliteRequestDTO dto, Long medecinId, Long excludeDispoId) {
         if (dto.getDateJour() == null || dto.getHeureDebut() == null || dto.getHeureFin() == null) {
-            throw new IllegalArgumentException("La date, l'heure de début et l'heure de fin sont obligatoires.");
+            throw new BadRequestException("La date, l'heure de début et l'heure de fin sont obligatoires.");
         }
         if (dto.getDureeCreneauMinutes() == null || dto.getDureeCreneauMinutes() <= 0) {
-            throw new IllegalArgumentException("La durée d'un créneau doit être strictement supérieure à 0 minute.");
+            throw new BadRequestException("La durée d'un créneau doit être strictement supérieure à 0 minute.");
         }
         if (!dto.getHeureDebut().isBefore(dto.getHeureFin())) {
-            throw new IllegalArgumentException("L'heure de début doit être strictement antérieure à l'heure de fin.");
+            throw new BadRequestException("L'heure de début doit être strictement antérieure à l'heure de fin.");
         }
 
         List<DisponibiliteMedecin> existantes =
@@ -112,7 +114,7 @@ public class PlanningServiceImpl implements PlanningService {
             boolean chevauchement = dto.getHeureDebut().isBefore(existante.getHeureFin())
                     && dto.getHeureFin().isAfter(existante.getHeureDebut());
             if (chevauchement) {
-                throw new IllegalArgumentException(
+                throw new BadRequestException(
                         "Cette plage horaire chevauche une disponibilité déjà définie ("
                                 + existante.getHeureDebut() + " - " + existante.getHeureFin() + ")."
                 );

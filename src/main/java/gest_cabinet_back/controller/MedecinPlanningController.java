@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/medecin/disponibilites")
@@ -28,7 +29,7 @@ public class MedecinPlanningController {
     @ResponseStatus(HttpStatus.CREATED)
     public DisponibiliteResponseDTO definirDisponibilite(
             Authentication authentication,
-            @RequestBody DisponibiliteRequestDTO dto
+            @Valid @RequestBody DisponibiliteRequestDTO dto
     ) {
         return planningService.definirDisponibilite(authentication.getName(), dto);
     }
@@ -47,7 +48,7 @@ public class MedecinPlanningController {
     public DisponibiliteResponseDTO modifierDisponibilite(
             Authentication authentication,
             @PathVariable Long id,
-            @RequestBody DisponibiliteRequestDTO dto
+            @Valid @RequestBody DisponibiliteRequestDTO dto
     ) {
         return planningService.modifierDisponibilite(authentication.getName(), id, dto);
     }
