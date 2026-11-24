@@ -17,8 +17,10 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
     List<RendezVous> findByMedecinId(Long medecinId);
     Optional<RendezVous> findByIdAndMedecinId(Long id, Long medecinId);
     List<RendezVous> findByMedecinIdAndStatut(Long medecinId, StatutRdv statut);
+    List<RendezVous> findByMedecinIdAndStatutOrderByDateHeureAsc(Long medecinId, StatutRdv statut);
     Optional<RendezVous> findByIdAndMedecinIdAndStatut(Long id, Long medecinId, StatutRdv statut);
     boolean existsByPatientIdAndMedecinId(Long patientId, Long medecinId);
+    List<RendezVous> findByStatutOrderByDateHeureAsc(StatutRdv statut);
 
     // --- REGLES RG05 & RG07 ---
     // RG05 : Compter les RDV futurs actifs (non annulés, non passés) du patient

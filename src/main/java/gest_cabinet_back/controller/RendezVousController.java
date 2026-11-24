@@ -91,6 +91,14 @@ public class RendezVousController {
         return ResponseEntity.ok(rendezVousService.consulterRdvMedecin(id, medecinId));
     }
 
+    @Operation(summary = "Lister les rendez-vous en attente de confirmation du médecin connecté (statut PLANIFIE)")
+    @PreAuthorize("hasRole('MEDECIN')")
+    @GetMapping("/medecin/a-confirmer")
+    public ResponseEntity<List<RendezVousMedecinResponseDTO>> listerMesRdvAConfirmer(Authentication authentication) {
+        Long medecinId = getId(authentication);
+        return ResponseEntity.ok(rendezVousService.listerRdvAConfirmerParMedecin(medecinId));
+    }
+
     // ================================================================
     //  Actions SECRETAIRE
     // ================================================================
@@ -124,6 +132,17 @@ public class RendezVousController {
     @GetMapping("/secretaire/{id}")
     public ResponseEntity<RendezVousMedecinResponseDTO> consulterRdvSecretaire(@PathVariable Long id) {
         return ResponseEntity.ok(rendezVousService.consulterRdvSecretaire(id));
+    }
+
+    @Operation(summary = "Lister les rendez-vous en attente de confirmation (vue secrétaire)")
+    @PreAuthorize("hasAnyRole('SECRETAIRE')")
+    @GetMapping("/secretaire/a-confirmer")
+    public ResponseEntity<List<RendezVousMedecinResponseDTO>> listerRdvAConfirmerSecretaire(
+            @RequestParam(required = false) Long medecinId) {
+        if (medecinId != null) {
+            return ResponseEntity.ok(rendezVousService.listerRdvAConfirmerParMedecin(medecinId));
+        }
+        return ResponseEntity.ok(rendezVousService.listerRdvAConfirmer());
     }
 
     @Operation(summary = "Confirmer un rendez-vous planifié")
