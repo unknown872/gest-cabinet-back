@@ -272,4 +272,42 @@ class RendezVousServiceImplTest {
         assertThrows(RessourceNotFoundException.class,
                 () -> rendezVousService.getCreneauxDisponibles(999L, LocalDate.now()));
     }
+
+    @Test
+    void listerRdvAConfirmer_retourneRdvPlanifie() {
+        RendezVous rdv = new RendezVous();
+        rdv.setId(60L);
+        rdv.setPatient(patient);
+        rdv.setMedecin(medecin);
+        rdv.setStatut(StatutRdv.PLANIFIE);
+        rdv.setDateHeure(LocalDateTime.now().plusDays(2));
+
+        when(rendezVousRepository.findByStatutOrderByDateHeureAsc(StatutRdv.PLANIFIE))
+                .thenReturn(List.of(rdv));
+
+        List<RendezVousMedecinResponseDTO> result = rendezVousService.listerRdvAConfirmer();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(StatutRdv.PLANIFIE, result.get(0).getStatut());
+    }
+
+    @Test
+    void listerRdvAConfirmerParMedecin_retourneRdvPlanifieDuMedecin() {
+        RendezVous rdv = new RendezVous();
+        rdv.setId(60L);
+        rdv.setPatient(patient);
+        rdv.setMedecin(medecin);
+        rdv.setStatut(StatutRdv.PLANIFIE);
+        rdv.setDateHeure(LocalDateTime.now().plusDays(2));
+
+        when(rendezVousRepository.findByMedecinIdAndStatutOrderByDateHeureAsc(1L, StatutRdv.PLANIFIE))
+                .thenReturn(List.of(rdv));
+
+        List<RendezVousMedecinResponseDTO> result = rendezVousService.listerRdvAConfirmerParMedecin(1L);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(StatutRdv.PLANIFIE, result.get(0).getStatut());
+    }
 }

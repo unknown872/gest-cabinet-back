@@ -286,6 +286,24 @@ public class RendezVousServiceImpl implements RendezVousService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<RendezVousMedecinResponseDTO> listerRdvAConfirmer() {
+        return rendezVousRepository.findByStatutOrderByDateHeureAsc(StatutRdv.PLANIFIE)
+                .stream()
+                .map(this::verserDtoRdvMedecin)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RendezVousMedecinResponseDTO> listerRdvAConfirmerParMedecin(Long medecinId) {
+        return rendezVousRepository.findByMedecinIdAndStatutOrderByDateHeureAsc(medecinId, StatutRdv.PLANIFIE)
+                .stream()
+                .map(this::verserDtoRdvMedecin)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public RendezVousMedecinResponseDTO consulterRdvSecretaire(Long rdvId) {
         RendezVous rdv = rendezVousRepository.findById(rdvId)
                 .orElseThrow(() -> new RessourceNotFoundException("Rendez-vous introuvable avec l'id : " + rdvId));

@@ -27,6 +27,8 @@ public interface RendezVousService {
     RendezVousMedecinResponseDTO creerRdvParSecretaire(RendezVousRequestDTO dto);
     List<RendezVousMedecinResponseDTO> listerTousLesRdv();
     List<RendezVousMedecinResponseDTO> listerRdvDuJour(LocalDate date);
+    List<RendezVousMedecinResponseDTO> listerRdvAConfirmer();
+    List<RendezVousMedecinResponseDTO> listerRdvAConfirmerParMedecin(Long medecinId);
     RendezVousMedecinResponseDTO consulterRdvSecretaire(Long rdvId);
     RendezVousMedecinResponseDTO confirmerRdv(Long rdvId);
     RendezVousMedecinResponseDTO confirmerRdv(Long rdvId, String notes);
